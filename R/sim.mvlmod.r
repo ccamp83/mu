@@ -187,7 +187,7 @@ sim.mvlmod <- function(dv.n, iv.lev, formula="full", is.iv.factor, repetitions=1
   }
   
   # generate the error matrix given the covariance matrix and the user-defined limits (if any)
-  E <- rmvnorm(n*samples, sigma=e.M)
+  E <- mvtnorm::rmvnorm(n*samples, sigma=e.M)
   
   ######## MODEL CONSTRUCTION
   # full data matrix
@@ -200,7 +200,7 @@ sim.mvlmod <- function(dv.n, iv.lev, formula="full", is.iv.factor, repetitions=1
     while(outliers > 0)
     {
       outliers <- length(Y[Y < dv.min | Y > dv.max])
-      E <- rmvnorm(n*samples, sigma=e.M)
+      E <- mvtnorm::rmvnorm(n*samples, sigma=e.M)
       Y[Y < dv.min | Y > dv.max] <- (X %*% B)[Y < dv.min | Y > dv.max] + E[Y < dv.min | Y > dv.max]
     }
     E <- Y - as.matrix(X %*% B) # recalculate error matrix

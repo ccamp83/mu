@@ -1,7 +1,8 @@
 #' Load and update all the required libraries of the shapelab package
+#' @param load should the packages be loaded? (default to TRUE)
 #' @param update if TRUE, the function also updates the libraries to newest version (FALSE by default)
 #' @export
-libraries <- function(update=F)
+libraries <- function(load=T, update=F)
 {
   # retrieve the list of installed packages using installed.packages()
   packages <- levels(as.data.frame(installed.packages())$Package)
@@ -12,11 +13,9 @@ libraries <- function(update=F)
     "plyr",
     "ggplot2",
     "lme4",
-    "RCurl", # ubuntu 14.04 requires "sudo apt-get install libcurl4-gnutls-dev" to install this package
     "fields",
     "gridExtra",
     "grid",
-    "rgl", # ubuntu 14.04 requires "sudo apt-get install libX11-dev freeglut3 freeglut3-dev libxml2-dev" to install this package
     "grDevices",
     "car",
     "phia",
@@ -24,13 +23,11 @@ libraries <- function(update=F)
     "lattice",
     "roxygen2",
     "AICcmodavg",
-    "reshape2",
     "fpc",
     "pbkrtest",
     "clusterGeneration", # rcorrmatrix
     "DescTools",
     "parallel",
-    "mvtnorm",
     "heplots"
   )
   
@@ -49,9 +46,12 @@ libraries <- function(update=F)
     update.packages()
   }
   
-  # load the required libraries
-  for(i in 1:length(reqPackages))
+  if(load)
   {
-    library(reqPackages[i], character.only=T)
+    # load the required libraries
+    for(i in 1:length(reqPackages))
+    {
+      library(reqPackages[i], character.only=T)
+    }
   }
 }

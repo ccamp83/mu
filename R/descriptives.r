@@ -21,8 +21,8 @@ descriptives <- function(data)
     round(apply(x, 2, sd, na.rm=T), 2),
     round(apply(x, 2, median, na.rm=T), 2),
     round(apply(x, 2, IQR, na.rm=T, type=3), 3),
-    round(apply(x, 2, Skew, na.rm = T), 3),
-    round(apply(x, 2, Kurt, na.rm = T, method = 2), 3)
+    round(apply(x, 2, DescTools::Skew, na.rm = T), 3),
+    round(apply(x, 2, DescTools::Kurt, na.rm = T, method = 2), 3)
   )
   output <- as.data.frame(t(temp))
   

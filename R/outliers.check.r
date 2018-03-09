@@ -17,12 +17,3 @@ outliers.check <- function(raw.vector, sd.thresh=1.5, fun.replace = "median", lo
   }
   return(output)
 }
-
-# outliers.check <- function(raw.vector, sd.thresh=1.5)
-# {
-#   cleaned.vector <- ifelse(raw.vector > median(raw.vector) + sd.thresh*sd(raw.vector) | raw.vector < median(raw.vector) - sd.thresh*sd(raw.vector), median(raw.vector), raw.vector)
-#   is.outlier <- ifelse(raw.vector > median(raw.vector) + sd.thresh*sd(raw.vector) | raw.vector < median(raw.vector) - sd.thresh*sd(raw.vector), 1, 0)
-#   output <- data.frame(cleaned.vector, is.outlier = factor(is.outlier))
-#   return(output)
-# }
-quantile(sample(runif(10, 0, 100)))[2]

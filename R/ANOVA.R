@@ -14,7 +14,7 @@ ANOVA <- function (data, dv, formula, type = 3)
     data[, var] <- factor(data[, var])
   }
   # reshape to wide format
-  wideData <- dcast(data, formula, value.var = dv, fun.aggregate = mean)
+  wideData <- reshape2::dcast(data, formula, value.var = dv, fun.aggregate = mean)
   # set the between term
   # and fit the multivariate linear model
   if(length(lhs)>1){
@@ -97,7 +97,7 @@ ANOVA <- function (data, dv, formula, type = 3)
   spherTest <- NULL
   spherCorrection <- NULL
   if(multivariate){
-    multi <- etasq(man.res.d, anova = T)
+    multi <- heplots::etasq(man.res.d, anova = T)
     spherTest <- round(summary(man.res.d)$sphericity.tests, 3)
     spherCorrection <- round(as.data.frame(summary(man.res.d)$pval.adjustments)[c(2,4)], 3)
   }

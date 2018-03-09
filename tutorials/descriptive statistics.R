@@ -14,4 +14,3 @@ examine(anscombe, x4, all.results = T)
 
 #### FREQUENCIES ####
 frequencies(anscombe)
-

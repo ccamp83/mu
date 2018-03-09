@@ -1,7 +1,7 @@
 #' Load libraries and download them if not existing
 #' @param wants a vector of strings with the names of the packages to load
 #' @export
-cc.library <- function(wants)
+mu.library <- function(wants)
 {
   # what we have
   has <- wants %in% rownames(installed.packages())

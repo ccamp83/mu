@@ -10,5 +10,8 @@ Description: Requires packages devtools and roxygen2 to be edited under
     Rstudio. If installing under Linux, run the following command before
     starting to use the package the first time: sudo apt-get install libcurl4-gnutls-dev
     libX11-dev freeglut3 freeglut3-dev
+Imports:
+    plyr,
+    DescTools
 License: free
 RoxygenNote: 6.0.1

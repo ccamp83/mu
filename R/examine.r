@@ -44,8 +44,8 @@ examine <- function(data, x=NULL, all.results=FALSE, ...)
       "Maximum" = max(x, na.rm=T),
       "TrimmedMean" = round(mean(x, trim=0.25, na.rm=T), 2),
       "IQR" = IQR(x, na.rm=T, type=3),
-      "Skewness" = round(Skew(x, na.rm=T), 3),
-      "Kurtosis" = round(Kurt(x, na.rm=T, method=2), 3),
+      "Skewness" = round(DescTools::Skew(x, na.rm=T), 3),
+      "Kurtosis" = round(DescTools::Kurt(x, na.rm=T, method=2), 3),
       "Median" = round(median(x, na.rm=T), 3)
     )
     
