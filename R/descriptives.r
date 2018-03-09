@@ -18,11 +18,15 @@ descriptives <- function(data)
     apply(x, 2, min, na.rm=T),
     apply(x, 2, max, na.rm=T),
     round(apply(x, 2, mean, na.rm=T), 2),
-    round(apply(x, 2, sd, na.rm=T), 3)
+    round(apply(x, 2, sd, na.rm=T), 2),
+    round(apply(x, 2, median, na.rm=T), 2),
+    round(apply(x, 2, IQR, na.rm=T, type=3), 3),
+    round(apply(x, 2, Skew, na.rm = T), 3),
+    round(apply(x, 2, Kurt, na.rm = T, method = 2), 3)
   )
   output <- as.data.frame(t(temp))
   
-  colnames(output) <- c("N","Missing","Min","Max","Mean","Std. Deviation")
-  
+  colnames(output) <- c("N","Missing","Min","Max","Mean","SD","Median","IQR","Skewness","Kurtosis")
+
   return(output)
 }
