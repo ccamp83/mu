@@ -1,5 +1,5 @@
-#' Sample an experiment
-#' @param object an object of the class shapelab.exp.design produced with the function design.experiment
+#' Simulate data of an experiment with a given linear design
+#' @param object an object of the class mu.exp.design produced with the function design.experiment
 #' @param subj number of subjects
 #' @param repetitions number of repetitions per subject
 #' @param return_data default to TRUE. Use FALSE to produce just a trials sequence
@@ -30,7 +30,7 @@
 #' (r <- design.experiment(lIV, tIV, betas = cus.beta, thetas = cus.theta, s = cus.sigma, exp.formula, seed=trial.seed))
 #' 
 #' # start the simulation
-#' exp.info <- sample.experiment(r, 10, 10)
+#' exp.info <- simulate.experiment(r, 10, 10)
 #' 
 #' # extract the simulated data
 #' exp <- exp.info$exp
@@ -44,23 +44,23 @@
 #'   theme_bw()
 #'   
 #' # check a fit of the data (with more subjects)
-#' exp.info <- sample.experiment(r, 100, 10)
+#' exp.info <- simulate.experiment(r, 100, 10)
 #' exp <- exp.info$exp
 #' (lmod1 <- lmer(y ~ Var1*Var2 + (1 + Var1*Var2|subjName), data=exp))
-#' @return An object of the class shapelab.exp.design with the following values
+#' @return An object of the class mu.exp.design with the following values
 #' 
 #' @return seed the seed that was used during the simulation
 #' @return exp the simulated data
 #' @return coef.matrix the subj-by-subj coefficient matrix 
 #' @export
-sample.experiment <- function(object, subj, repetitions, return_data = T)
+simulate.experiment <- function(object, subj, repetitions, return_data = T)
 { 
-  if(class(object) == "shapelab.exp.design")
+  if(class(object) == "mu.exp.design")
   {
     cat("Simulating... ")
   } else
   {
-    stop('Object must be of class shapelab.exp.design')
+    stop('Object must be of class mu.exp.design')
   }
   
   lexp <- object$IV
@@ -131,7 +131,7 @@ sample.experiment <- function(object, subj, repetitions, return_data = T)
   output <- list("seed" = object$seed,
                  "exp" = exp,
                  "coef.matrix" = beta)
-  class(output) <- "shapelab.exp.design"
+  class(output) <- "mu.exp.design"
   
   cat("Done.")
   return(output)

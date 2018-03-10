@@ -42,7 +42,7 @@
 #' (r3 <- design.experiment(lIV, tIV, exp.formula, seed=trial.seed, beta.min=-5, beta.max=10, theta.min=0, theta.max=10, s.min=5, s.max=12))
 #' (r4 <- design.experiment(lIV, tIV, exp.formula, seed=trial.seed, betas=cus.beta, thetas=cus.theta, s=cus.sigma, thetas.orthogonal=F))
 #' 
-#' @return An object of the class shapelab.exp.design to be used with the function sample.experiment with the following values
+#' @return An object of the class mu.exp.design to be used with the function sample.experiment with the following values
 #' @return seed the seed that will be used for simulation
 #' @return ncoef the number of coefficients of the model
 #' @return beta.matrix coefficients matrix
@@ -125,7 +125,7 @@ design.experiment <- function(list.IV, type.IV, formula, seed=NA, beta.min=0, be
                  "IV_type" = tIV,
                  "formula" = formula
   )
-  class(output) <- "shapelab.exp.design"
+  class(output) <- "mu.exp.design"
   
   cat('\n# of independent variables:    ', length(output$IV),
       '\nBetween: ', length(which(output$IV_type == "b")), ' || Within: ', length(which(output$IV_type == "w")),
