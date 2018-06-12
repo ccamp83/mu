@@ -47,7 +47,7 @@ ANOVA <- function (data, dv, formula, type = 3)
   if(multivariate){
     res.uni <- summary(man.res.d)$uni
     
-    SSeffect <- res.uni[,"SS"]
+    SSeffect <- res.uni[,"Sum Sq"]
     SSerror <- res.uni[,"Error SS"]
     dfEffect <- res.uni[,"num Df"]
     dfError <- res.uni[,"den Df"]
@@ -58,7 +58,7 @@ ANOVA <- function (data, dv, formula, type = 3)
     # etaSqP2 <- (Fval * dfEffect) / ((Fval * dfEffect) + dfError)
     omegaSq <- (SSeffect - dfEffect*MSerror) / (SStotal + MSerror)
     
-    Fval = res.uni[,"F"]
+    Fval = res.uni[,"F value"]
     Pval = res.uni[,"Pr(>F)"]
     
   } else {
