@@ -13,5 +13,5 @@ Description: Requires packages devtools and roxygen2 to be edited under
 Imports:
     plyr,
     DescTools
-License: free
+License: MIT + file LICENSE
 RoxygenNote: 6.0.1
