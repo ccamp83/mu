@@ -1,6 +1,6 @@
 #' Comprehensive ANOVA
 #' @export
-ANOVA <- function (data, dv, formula, type = 3) 
+ANOVA <- function (data, dv, formula, type = 2) 
 {
   # get variables of the formula
   lhs <- all.vars(update(formula, . ~ 0))
