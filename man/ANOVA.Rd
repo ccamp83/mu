@@ -4,7 +4,7 @@
 \alias{ANOVA}
 \title{Comprehensive ANOVA}
 \usage{
-ANOVA(data, dv, formula, type = 3)
+ANOVA(data, dv, formula, type = 2)
 }
 \description{
 Comprehensive ANOVA

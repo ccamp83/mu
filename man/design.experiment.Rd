@@ -4,9 +4,22 @@
 \alias{design.experiment}
 \title{Design an experiment}
 \usage{
-design.experiment(list.IV, type.IV, formula, seed = NA, beta.min = 0,
-  beta.max = 20, betas = NA, theta.min = 0, theta.max = 8,
-  thetas = NA, thetas.orthogonal = T, s.min = 0, s.max = 20, s = NA)
+design.experiment(
+  list.IV,
+  type.IV,
+  formula,
+  seed = NA,
+  beta.min = 0,
+  beta.max = 20,
+  betas = NA,
+  theta.min = 0,
+  theta.max = 8,
+  thetas = NA,
+  thetas.orthogonal = T,
+  s.min = 0,
+  s.max = 20,
+  s = NA
+)
 }
 \arguments{
 \item{list.IV}{a list of the independent variables with their relative values}
@@ -38,7 +51,7 @@ design.experiment(list.IV, type.IV, formula, seed = NA, beta.min = 0,
 \item{s}{this parameters allows to assign a specific standard deviation to the model's residuals}
 }
 \value{
-An object of the class shapelab.exp.design to be used with the function sample.experiment with the following values
+An object of the class mu.exp.design to be used with the function sample.experiment with the following values
 
 seed the seed that will be used for simulation
 

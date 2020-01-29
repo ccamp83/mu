@@ -2,12 +2,12 @@
 % Please edit documentation in R/simulate.experiment.r
 \name{simulate.experiment}
 \alias{simulate.experiment}
-\title{simulate an experiment}
+\title{Simulate data of an experiment with a given linear design}
 \usage{
-simulate.experiment(object, subj, repetitions, return_data = T)
+\method{simulate}{experiment}(object, subj, repetitions, return_data = T)
 }
 \arguments{
-\item{object}{an object of the class shapelab.exp.design produced with the function design.experiment}
+\item{object}{an object of the class mu.exp.design produced with the function design.experiment}
 
 \item{subj}{number of subjects}
 
@@ -16,7 +16,7 @@ simulate.experiment(object, subj, repetitions, return_data = T)
 \item{return_data}{default to TRUE. Use FALSE to produce just a trials sequence}
 }
 \value{
-An object of the class shapelab.exp.design with the following values
+An object of the class mu.exp.design with the following values
 
 seed the seed that was used during the simulation
 
@@ -25,7 +25,7 @@ exp the simulated data
 coef.matrix the subj-by-subj coefficient matrix
 }
 \description{
-simulate an experiment
+Simulate data of an experiment with a given linear design
 }
 \examples{
 libraries()

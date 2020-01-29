@@ -4,9 +4,11 @@
 \alias{libraries}
 \title{Load and update all the required libraries of the shapelab package}
 \usage{
-libraries(update = F)
+libraries(load = T, update = F)
 }
 \arguments{
+\item{load}{should the packages be loaded? (default to TRUE)}
+
 \item{update}{if TRUE, the function also updates the libraries to newest version (FALSE by default)}
 }
 \description{

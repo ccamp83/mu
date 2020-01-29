@@ -4,9 +4,20 @@
 \alias{sim.mvlmod}
 \title{Simulate data according to a specific multivariate linear model}
 \usage{
-sim.mvlmod(dv.n, iv.lev, formula = "full", is.iv.factor, repetitions = 1,
-  B = NULL, e.sd = NULL, dv.orthogonal = T, seed = NA, dv.min = -Inf,
-  dv.max = Inf, ...)
+sim.mvlmod(
+  dv.n,
+  iv.lev,
+  formula = "full",
+  is.iv.factor,
+  repetitions = 1,
+  B = NULL,
+  e.sd = NULL,
+  dv.orthogonal = T,
+  seed = NA,
+  dv.min = -Inf,
+  dv.max = Inf,
+  ...
+)
 }
 \arguments{
 \item{dv.n}{# of dependent variables}
