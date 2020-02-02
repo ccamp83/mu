@@ -4,22 +4,10 @@
 \alias{design.experiment}
 \title{Design an experiment}
 \usage{
-design.experiment(
-  list.IV,
-  type.IV,
-  formula,
-  seed = NA,
-  beta.min = 0,
-  beta.max = 20,
-  betas = NA,
-  theta.min = 0,
-  theta.max = 8,
-  thetas = NA,
-  thetas.orthogonal = T,
-  s.min = 0,
-  s.max = 20,
-  s = NA
-)
+design.experiment(list.IV, type.IV, formula, seed = NA, beta.min = 0,
+  beta.max = 20, betas = NA, theta.min = 0, theta.max = 8,
+  thetas = NA, thetas.orthogonal = T, s.min = 0, s.max = 20,
+  s = NA)
 }
 \arguments{
 \item{list.IV}{a list of the independent variables with their relative values}
