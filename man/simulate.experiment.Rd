@@ -70,5 +70,5 @@ ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) +
 # check a fit of the data (with more subjects)
 exp.info <- simulate.experiment(r, 100, 10)
 exp <- exp.info$exp
-(lmod1 <- lmer(y ~ Var1*Var2 + (1 + Var1*Var2|subjName), data=exp))
+(lmod1 <- lmer(y ~ Var1+Var2 + (1 + Var1*Var2|subjName), data=exp))
 }
