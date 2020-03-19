@@ -2,8 +2,8 @@ Package: mu
 Type: Package
 Title: R package for general statistical analysis of univariate and multivariate data
     movements.
-Version: 1.4
-Date: 02/03/2020
+Version: 1.5
+Date: 03/19/2020
 Author: Carlo Campagnoli
 Maintainer: <carlo.campagnoli@princeton.edu>
 Description: Requires packages devtools and roxygen2 to be edited under
