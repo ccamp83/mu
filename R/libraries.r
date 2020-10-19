@@ -5,7 +5,7 @@
 libraries <- function(load=T, update=F)
 {
   # retrieve the list of installed packages using installed.packages()
-  packages <- levels(as.data.frame(installed.packages())$Package)
+  packages <- rownames(installed.packages())
   
   # list of the required packages
   reqPackages <- c(
@@ -37,7 +37,7 @@ libraries <- function(load=T, update=F)
   # install missing packages (if existing)
   if(length(toBeInstalled)!=0)
   {
-    install.packages(toBeInstalled, repos = "https://cloud.r-project.org/")
+    install.packages(toBeInstalled, repos = "https://cloud.r-project.org/", dependencies = T)
   }
   
   # update packages if requested by user
