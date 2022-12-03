@@ -2,6 +2,7 @@
 #' @param list.IV a list of the independent variables with their relative values
 #' @param type.IV a vector specifying whether each IV is within ("w") or between ("b")
 #' @param formula a string describing the linear model to be simulated, of the type ~ F1 + (F2*F3)
+#' @param calculate.coef.num logical, if TRUE the function just calculates the number of coefficients corresponding to the variables listed
 #' @param seed optional, a seed to apply to the simulation (for reproducibility)
 #' @param beta.min lower boundary of the uniform distribution from which the values/means of the betas are extracted (if betas = NA)
 #' @param beta.max upper boundary of the uniform distribution from which the values/means of the betas are extracted (if betas = NA)
@@ -53,16 +54,8 @@
 #' @return type_IV returns type.IV
 #' @return formula returns the formula
 #' @export
-design.experiment <- function(list.IV, type.IV, formula, seed=NA, beta.min=0, beta.max=20, betas=NA, theta.min=0, theta.max=8, thetas=NA, thetas.orthogonal=T, s.min=0, s.max=20, s=NA)
+design.experiment <- function(list.IV, type.IV, formula, calculate.coef.num = F, seed=NA, beta.min=0, beta.max=20, betas=NA, theta.min=0, theta.max=8, thetas=NA, thetas.orthogonal=T, s.min=0, s.max=20, s=NA)
 {
-  if(!is.na(seed))
-  {
-    set.seed(seed)
-  } else
-  {
-    stop('Ininitialize a seed to proceed.')
-  }
-  
   # independent variables
   IV <- list.IV
   tIV <- type.IV
@@ -75,62 +68,78 @@ design.experiment <- function(list.IV, type.IV, formula, seed=NA, beta.min=0, be
   
   # create coefficients
   ncoef <- length(design.matrix) # how many coefficients 
+  coef.names <- names(design.matrix)
   
-  if(any(is.na(betas)))
+  if(!calculate.coef.num)
   {
-    beta.fix <- runif(ncoef, min=beta.min, max=beta.max) # coefficients means (fixed effects) are randomly initialized within specific boundaries
-  } else
-  {
-    beta.fix <- betas # coefficients means (fixed effects) are specified by user
+    if(!is.na(seed))
+    {
+      set.seed(seed)
+    } else
+    {
+      seed <- sample(1e3, 1)
+      set.seed(seed)
+    }
+    
+    if(any(is.na(betas)))
+    {
+      beta.fix <- runif(ncoef, min=beta.min, max=beta.max) # coefficients means (fixed effects) are randomly initialized within specific boundaries
+    } else
+    {
+      beta.fix <- betas # coefficients means (fixed effects) are specified by user
+    }
+    beta.matrix <- data.frame(t(beta.fix)); names(beta.matrix) <- names(design.matrix)
+    
+    if(any(is.na(thetas)))
+    {
+      theta <- runif(ncoef, min=theta.min, max=theta.max)^2 # coefficients standard deviations are randomly initialized within specific boundaries
+    } else
+    {
+      theta <- thetas^2
+    }
+    
+    if(!thetas.orthogonal)
+    {
+      R <- rcorrmatrix(ncoef)
+      M <- diag(sqrt(theta)) %*% R %*% diag(sqrt(theta))
+      theta.matrix <- data.frame(M); names(theta.matrix) <- names(design.matrix); row.names(theta.matrix) <- names(design.matrix)
+      corr.matrix <- data.frame(R); names(corr.matrix) <- names(design.matrix); row.names(corr.matrix) <- names(design.matrix)
+    } else
+    {
+      R <- diag(ncoef)
+      M <- diag(sqrt(theta)) %*% R %*% diag(sqrt(theta))
+      theta.matrix <- data.frame(M); names(theta.matrix) <- names(design.matrix); row.names(theta.matrix) <- names(design.matrix)
+      corr.matrix <- data.frame(R); names(corr.matrix) <- names(design.matrix); row.names(corr.matrix) <- names(design.matrix)
+    }
+    
+    if(is.na(s))
+    {
+      sigma <- runif(1, min=s.min, max=s.max) # residuals standard deviation is randomly initialized up to a max
+    } else
+    {
+      sigma <- s
+    }
+    
+    output <- list("seed" = seed, 
+                   "ncoef" = ncoef, 
+                   "beta.matrix" = beta.matrix, 
+                   "theta.matrix" = theta.matrix, 
+                   "corr.matrix" = corr.matrix, 
+                   "sigma" = sigma, 
+                   "IV" = list.IV,
+                   "IV_type" = tIV,
+                   "formula" = formula
+    )
+    class(output) <- "mu.exp.design"
+    
+    cat('\n# of independent variables:    ', length(output$IV),
+        '\nBetween: ', length(which(output$IV_type == "b")), ' || Within: ', length(which(output$IV_type == "w")),
+        '\nParameters of the full model:  ', output$ncoef, '\n\n', 
+        sep = '')
+  } else {
+    output <- list("ncoef" = ncoef,
+                   "coef names" = coef.names)
   }
-  beta.matrix <- data.frame(t(beta.fix)); names(beta.matrix) <- names(design.matrix)
-  
-  if(any(is.na(thetas)))
-  {
-    theta <- runif(ncoef, min=theta.min, max=theta.max)^2 # coefficients standard deviations are randomly initialized within specific boundaries
-  } else
-  {
-    theta <- thetas^2
-  }
-  
-  if(!thetas.orthogonal)
-  {
-    R <- rcorrmatrix(ncoef)
-    M <- diag(sqrt(theta)) %*% R %*% diag(sqrt(theta))
-    theta.matrix <- data.frame(M); names(theta.matrix) <- names(design.matrix); row.names(theta.matrix) <- names(design.matrix)
-    corr.matrix <- data.frame(R); names(corr.matrix) <- names(design.matrix); row.names(corr.matrix) <- names(design.matrix)
-  } else
-  {
-    R <- diag(ncoef)
-    M <- diag(sqrt(theta)) %*% R %*% diag(sqrt(theta))
-    theta.matrix <- data.frame(M); names(theta.matrix) <- names(design.matrix); row.names(theta.matrix) <- names(design.matrix)
-    corr.matrix <- data.frame(R); names(corr.matrix) <- names(design.matrix); row.names(corr.matrix) <- names(design.matrix)
-  }
-  
-  if(is.na(s))
-  {
-    sigma <- runif(1, min=s.min, max=s.max) # residuals standard deviation is randomly initialized up to a max
-  } else
-  {
-    sigma <- s
-  }
-  
-  output <- list("seed" = seed, 
-                 "ncoef" = ncoef, 
-                 "beta.matrix" = beta.matrix, 
-                 "theta.matrix" = theta.matrix, 
-                 "corr.matrix" = corr.matrix, 
-                 "sigma" = sigma, 
-                 "IV" = list.IV,
-                 "IV_type" = tIV,
-                 "formula" = formula
-  )
-  class(output) <- "mu.exp.design"
-  
-  cat('\n# of independent variables:    ', length(output$IV),
-      '\nBetween: ', length(which(output$IV_type == "b")), ' || Within: ', length(which(output$IV_type == "w")),
-      '\nParameters of the full model:  ', output$ncoef, '\n\n', 
-      sep = '')
   
   return(output)
 }

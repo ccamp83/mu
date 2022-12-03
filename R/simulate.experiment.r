@@ -1,5 +1,5 @@
 #' Simulate data of an experiment with a given linear design
-#' @param object an object of the class mu.exp.design produced with the function design.experiment
+#' @param design an object of the class mu.exp.design produced with the function design.experiment
 #' @param subj number of subjects
 #' @param repetitions number of repetitions per subject
 #' @param return_data default to TRUE. Use FALSE to produce just a trials sequence
@@ -117,7 +117,8 @@ simulate.experiment <- function(object, subj, repetitions, return_data = T)
     r = L %*% matrix(rnorm(lengthunique(exp$subjName)*ncoef), nrow=ncoef, ncol=lengthunique(exp$subjName))
     r = t(r)
     # Translate each column by its respective beta (thus preserving variances and covariances)
-    beta <- r + t(matrix(rep(beta.fix, ncoef*lengthunique(exp$subjName)), nrow=ncoef, ncol=lengthunique(exp$subjName)))
+    fixefM <- t(matrix(rep(beta.fix, ncoef*lengthunique(exp$subjName)), nrow=ncoef, ncol=lengthunique(exp$subjName)))
+    beta <- r + fixefM
     beta <- as.data.frame(beta); row.names(beta) <- unique(exp$subjName)
     
     coef.matrix <- beta[rep(seq_len(nrow(beta)), each=max(exp$trialN)),]; row.names(coef.matrix) <- 1:nrow(coef.matrix)
@@ -133,6 +134,6 @@ simulate.experiment <- function(object, subj, repetitions, return_data = T)
                  "coef.matrix" = beta)
   class(output) <- "mu.exp.design"
   
-  cat("Done.")
+  cat("Done.\n\n")
   return(output)
 }
