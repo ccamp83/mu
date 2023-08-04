@@ -10,4 +10,4 @@ Imports:
     plyr,
     DescTools
 License: MIT + file LICENSE
-RoxygenNote: 7.0.2
+RoxygenNote: 7.2.3

@@ -7,13 +7,13 @@
 \method{simulate}{experiment}(object, subj, repetitions, return_data = T)
 }
 \arguments{
-\item{object}{an object of the class mu.exp.design produced with the function design.experiment}
-
 \item{subj}{number of subjects}
 
 \item{repetitions}{number of repetitions per subject}
 
 \item{return_data}{default to TRUE. Use FALSE to produce just a trials sequence}
+
+\item{design}{an object of the class mu.exp.design produced with the function design.experiment}
 }
 \value{
 An object of the class mu.exp.design with the following values

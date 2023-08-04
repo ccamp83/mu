@@ -4,10 +4,23 @@
 \alias{design.experiment}
 \title{Design an experiment}
 \usage{
-design.experiment(list.IV, type.IV, formula, seed = NA, beta.min = 0,
-  beta.max = 20, betas = NA, theta.min = 0, theta.max = 8,
-  thetas = NA, thetas.orthogonal = T, s.min = 0, s.max = 20,
-  s = NA)
+design.experiment(
+  list.IV,
+  type.IV,
+  formula,
+  calculate.coef.num = F,
+  seed = NA,
+  beta.min = 0,
+  beta.max = 20,
+  betas = NA,
+  theta.min = 0,
+  theta.max = 8,
+  thetas = NA,
+  thetas.orthogonal = T,
+  s.min = 0,
+  s.max = 20,
+  s = NA
+)
 }
 \arguments{
 \item{list.IV}{a list of the independent variables with their relative values}
@@ -15,6 +28,8 @@ design.experiment(list.IV, type.IV, formula, seed = NA, beta.min = 0,
 \item{type.IV}{a vector specifying whether each IV is within ("w") or between ("b")}
 
 \item{formula}{a string describing the linear model to be simulated, of the type ~ F1 + (F2*F3)}
+
+\item{calculate.coef.num}{logical, if TRUE the function just calculates the number of coefficients corresponding to the variables listed}
 
 \item{seed}{optional, a seed to apply to the simulation (for reproducibility)}
 
