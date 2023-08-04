@@ -1,15 +1,11 @@
 Package: mu
 Type: Package
 Title: R package for general statistical analysis of univariate and multivariate data
-    movements.
-Version: 2.1
-Date: 03/12/2022
+Version: 3.0.0
+Date: 4 Aug 2023
 Author: Carlo Campagnoli
 Maintainer: <c.campagnoli@leeds.ac.uk>
-Description: Requires packages devtools and roxygen2 to be edited under
-    Rstudio. If installing under Linux, run the following command before
-    starting to use the package the first time: sudo apt-get install libcurl4-gnutls-dev
-    libX11-dev freeglut3 freeglut3-dev
+Description: R package for general statistical analysis of univariate and multivariate data
 Imports:
     plyr,
     DescTools
