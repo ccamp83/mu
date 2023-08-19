@@ -5,5 +5,7 @@
 
 .onAttach <- function(libname, pkgname)
 {
-  packageStartupMessage("#### MU v 3.0.2 - 19 Aug 2023 ####")
+  packageStartupMessage(paste0("#### MU v", 
+                               installed.packages()['mu','Version'],
+                               " 19 Aug 2023 ####"))
 }
