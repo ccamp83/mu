@@ -70,6 +70,12 @@ design.experiment <- function(list.IV, type.IV, formula, calculate.coef.num = F,
   ncoef <- length(design.matrix) # how many coefficients 
   coef.names <- names(design.matrix)
   
+  cat('\n# of independent variables:    ', length(IV),
+      '\nBetween: ', paste0(names(IV)[tIV %in% "b"], sep = " "),
+      '\nWithin: ', paste0(names(IV)[tIV %in% "w"], sep = " "),
+      '\nParameters of the model:  ', ncoef, '\n\n', 
+      sep = '')
+  
   if(!calculate.coef.num)
   {
     if(!is.na(seed))
@@ -132,10 +138,6 @@ design.experiment <- function(list.IV, type.IV, formula, calculate.coef.num = F,
     )
     class(output) <- "mu.exp.design"
     
-    cat('\n# of independent variables:    ', length(output$IV),
-        '\nBetween: ', length(which(output$IV_type == "b")), ' || Within: ', length(which(output$IV_type == "w")),
-        '\nParameters of the full model:  ', output$ncoef, '\n\n', 
-        sep = '')
   } else {
     output <- list("ncoef" = ncoef,
                    "coef names" = coef.names)

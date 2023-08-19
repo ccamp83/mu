@@ -5,5 +5,5 @@
 
 .onAttach <- function(libname, pkgname)
 {
-  packageStartupMessage("#### MU v 3.0.0 - 4 Aug 2023 ####")
+  packageStartupMessage("#### MU v 3.0.2 - 19 Aug 2023 ####")
 }

@@ -22,49 +22,54 @@
 #' exp.formula <- ~ Var1*Var2
 #' 
 #' # initialize the coefficients
-#' cus.beta <- c(1, 4, 5, 1)*3 # means of the fixed effects
-#' cus.theta <- c(1, 4, 5, 1) # standard errors of the random components
+#' cus.beta <- c(3, 6, 9, 12) # means of the fixed effects
+#' cus.theta <- c(1, 2, 3, 4)  # standard errors of the random components
 #' cus.sigma <- 3 # sigma of the model
 #' 
 #' # few examples
 #' (r <- design.experiment(lIV, tIV, betas = cus.beta, thetas = cus.theta, s = cus.sigma, exp.formula, seed=trial.seed))
 #' 
 #' # start the simulation
-#' exp.info <- simulate.experiment(r, 10, 10)
+#' exp.info <- sim.experiment(design = r, 
+#'                            subj = 10, 
+#'                            repetitions = 10)
 #' 
 #' # extract the simulated data
 #' exp <- exp.info$exp
 #' 
 #' # plot the results
 #' ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) + 
-#'   geom_point(size=3, alpha=.4) +                                                              # draw raw scores
-#'   stat_smooth(method='lm', level=.68, se=F, size=1) +                                         # draw fit line
-#'   stat_summary(fun.data='mean_sdl', geom='point', size=3, color='black') +                    # draw mean points
-#'   stat_summary(fun.data='mean_sdl', mult=1/sqrt(10), geom='errorbar', width=.2, size=1.2) +   # draw errorbars
+#'   geom_point(size=3, alpha=.4) +                                                  # draw raw scores
+#'   stat_smooth(method=lm, level=.68, se=F, linewidth=1, formula = y ~ x) +         # draw fit line
+#'   stat_summary(fun.data = mean_se, geom='point', size=3, color='black') +         # draw mean points
+#'   stat_summary(fun.data = mean_se, geom='errorbar', width=.2, linewidth=1.2) +    # draw errorbars
 #'   theme_bw()
-#'   
+#' 
 #' # check a fit of the data (with more subjects)
-#' exp.info <- simulate.experiment(r, 100, 10)
+#' exp.info <- sim.experiment(design = r, 
+#'                            subj = 100, 
+#'                            repetitions = 10)
 #' exp <- exp.info$exp
-#' (lmod1 <- lmer(y ~ Var1*Var2 + (1 + Var1*Var2|subjName), data=exp))
+#' (lmod1 <- lme4::lmer(y ~ Var1*Var2 + (1 + Var1*Var2|subjName), data=exp,
+#'                      control = lmerControl(optimizer = "bobyqa")))
 #' @return An object of the class mu.exp.design with the following values
 #' 
 #' @return seed the seed that was used during the simulation
 #' @return exp the simulated data
 #' @return coef.matrix the subj-by-subj coefficient matrix 
-#' @export
-simulate.experiment <- function(object, subj, repetitions, return_data = T)
+#' @export sim.experiment
+sim.experiment <- function(design, subj, repetitions, return_data = T)
 { 
-  if(class(object) == "mu.exp.design")
+  if(class(design) == "mu.exp.design")
   {
     cat("Simulating... ")
   } else
   {
-    stop('Object must be of class mu.exp.design')
+    stop('Design must be of class mu.exp.design')
   }
   
-  lexp <- object$IV
-  lexp[["IV_type"]] = object$IV_type
+  lexp <- design$IV
+  lexp[["IV_type"]] = design$IV_type
   between_cols <- which(lexp[["IV_type"]] == "b")
   between_data <- expand.grid(lexp[between_cols])
   lexp[["repetition"]] = 1:repetitions
@@ -91,10 +96,10 @@ simulate.experiment <- function(object, subj, repetitions, return_data = T)
   exp$subjName <- paste('subj', exp$subjName, sep='')
   exp$trialN <- 1:(nrow(within_data)/subj)
   # reorder the columns
-  exp <- exp[c("subjName","trialN","repetition",names(object$IV))]
+  exp <- exp[c("subjName","trialN","repetition",names(design$IV))]
   
   # dataset matrix
-  exp.matrix <- as.data.frame(model.matrix(object$formula, data=exp))
+  exp.matrix <- as.data.frame(model.matrix(design$formula, data=exp))
   
   # prepare the output
   beta <- NULL
@@ -104,12 +109,12 @@ simulate.experiment <- function(object, subj, repetitions, return_data = T)
   {
     #### sampling
     
-    beta.matrix <- object$beta.matrix
-    beta.fix <- as.numeric(object$beta.matrix)
-    sigma <- object$sigma
+    beta.matrix <- design$beta.matrix
+    beta.fix <- as.numeric(design$beta.matrix)
+    sigma <- design$sigma
     ncoef <- length(beta.matrix)
     
-    M <- as.matrix(object$theta.matrix)
+    M <- as.matrix(design$theta.matrix)
     L = t(chol(M)) # transposed so it gives the lower triangle
     
     # First we need to extract the coefficients for each individual, given the covariance matrix
@@ -117,7 +122,7 @@ simulate.experiment <- function(object, subj, repetitions, return_data = T)
     r = L %*% matrix(rnorm(lengthunique(exp$subjName)*ncoef), nrow=ncoef, ncol=lengthunique(exp$subjName))
     r = t(r)
     # Translate each column by its respective beta (thus preserving variances and covariances)
-    fixefM <- t(matrix(rep(beta.fix, ncoef*lengthunique(exp$subjName)), nrow=ncoef, ncol=lengthunique(exp$subjName)))
+    fixefM <- t(matrix(rep(beta.fix, lengthunique(exp$subjName)), nrow=ncoef, ncol=lengthunique(exp$subjName)))
     beta <- r + fixefM
     beta <- as.data.frame(beta); row.names(beta) <- unique(exp$subjName)
     
@@ -129,7 +134,7 @@ simulate.experiment <- function(object, subj, repetitions, return_data = T)
   }
   
   # package the output
-  output <- list("seed" = object$seed,
+  output <- list("seed" = design$seed,
                  "exp" = exp,
                  "coef.matrix" = beta)
   class(output) <- "mu.exp.design"
