@@ -5,7 +5,12 @@
 
 .onAttach <- function(libname, pkgname)
 {
-  packageStartupMessage(paste0("#### MU v", 
+  descriptionfile <- system.file("DESCRIPTION", package = "mu")
+  descfile <- desc::desc(descriptionfile)
+  
+  packageStartupMessage(paste0("#### MU v",
                                installed.packages()['mu','Version'],
-                               " 19 Aug 2023 ####"))
+                               " | ",
+                               descfile$get_field("Date"),
+                               " ####"))
 }
