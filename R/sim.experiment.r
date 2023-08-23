@@ -2,6 +2,7 @@
 #' @param design an object of the class mu.exp.design produced with the function design.experiment
 #' @param subj number of subjects
 #' @param repetitions number of repetitions per subject
+#' @param random_seed logical. When FALSE (default) the data is simulated using the seed passed via the design object. Set to TRUE to generate a random seed (ignores the seed parameter passed by the design object)
 #' @param return_data default to TRUE. Use FALSE to produce just a trials sequence
 #' @examples 
 #' libraries()
@@ -58,8 +59,8 @@
 #' @return exp the simulated data
 #' @return coef.matrix the subj-by-subj coefficient matrix 
 #' @export sim.experiment
-sim.experiment <- function(design, subj, repetitions, return_data = T)
-{ 
+sim.experiment <- function(design, subj, repetitions, random_seed = F, return_data = T)
+{
   if(class(design) == "mu.exp.design")
   {
     cat("Simulating... ")
@@ -67,6 +68,9 @@ sim.experiment <- function(design, subj, repetitions, return_data = T)
   {
     stop('Design must be of class mu.exp.design')
   }
+  
+  sim.seed <- ifelse(random_seed, round(runif(1, 0, 10000)), design$seed)
+  set.seed(sim.seed)
   
   lexp <- design$IV
   lexp[["IV_type"]] = design$IV_type
@@ -134,7 +138,7 @@ sim.experiment <- function(design, subj, repetitions, return_data = T)
   }
   
   # package the output
-  output <- list("seed" = design$seed,
+  output <- list("seed" = sim.seed,
                  "exp" = exp,
                  "coef.matrix" = beta)
   class(output) <- "mu.exp.design"

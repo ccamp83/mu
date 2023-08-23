@@ -4,7 +4,7 @@
 \alias{sim.experiment}
 \title{Simulate data of an experiment with a given linear design}
 \usage{
-sim.experiment(design, subj, repetitions, return_data = T)
+sim.experiment(design, subj, repetitions, random_seed = F, return_data = T)
 }
 \arguments{
 \item{design}{an object of the class mu.exp.design produced with the function design.experiment}
@@ -12,6 +12,8 @@ sim.experiment(design, subj, repetitions, return_data = T)
 \item{subj}{number of subjects}
 
 \item{repetitions}{number of repetitions per subject}
+
+\item{random_seed}{logical. When FALSE (default) the data is simulated using the seed passed via the design object. Set to TRUE to generate a random seed (ignores the seed parameter passed by the design object)}
 
 \item{return_data}{default to TRUE. Use FALSE to produce just a trials sequence}
 }
