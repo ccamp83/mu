@@ -1,6 +1,7 @@
 .onLoad <- function(libname, pkgname)
 {
   libraries()
+  theme_set(theme_cowplot())
 }
 
 .onAttach <- function(libname, pkgname)

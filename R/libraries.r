@@ -12,6 +12,7 @@ libraries <- function(load=T, update=F)
     "Hmisc",
     "plyr",
     "ggplot2",
+    "cowplot",
     "lme4",
     "fields",
     "gridExtra",
