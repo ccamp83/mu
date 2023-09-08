@@ -2,6 +2,12 @@
 # EXAMINE
 examine <- function(data, x=NULL, all.results=FALSE, ...)
 {
+  # if data is a vector, convert to data.frame
+  if(is.vector(data))
+  {
+    data <- data.frame(data)
+  }
+  
   # check which arguments have been declared
   arguments <- as.list(match.call())
   

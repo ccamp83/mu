@@ -1,8 +1,8 @@
 Package: mu
 Type: Package
 Title: R package for general statistical analysis of univariate and multivariate data
-Version: 3.1.4
-Date: 29 Aug 2023
+Version: 3.1.5
+Date: 8 Sep 2023
 Author: Carlo Campagnoli
 Maintainer: <c.campagnoli@leeds.ac.uk>
 Description: R package for general statistical analysis of univariate and multivariate data
