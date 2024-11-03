@@ -2,13 +2,34 @@
 % Please edit documentation in R/mu.library.r
 \name{mu.library}
 \alias{mu.library}
-\title{Load libraries and download them if not existing}
+\title{Load and Install Required R Packages}
 \usage{
 mu.library(wants)
 }
 \arguments{
-\item{wants}{a vector of strings with the names of the packages to load}
+\item{wants}{A character vector containing the names of R packages to load}
+}
+\value{
+Invisibly returns the results of loading each package via lapply
 }
 \description{
-Load libraries and download them if not existing
+This function checks if requested packages are installed, installs missing ones,
+and loads all requested packages into the R environment. It simplifies package
+management by handling both installation and loading in a single function call.
+}
+\details{
+The function performs three main steps:
+1. Checks which requested packages are already installed
+2. Installs any missing packages from CRAN
+3. Loads all requested packages using require()
+
+Packages are installed with dependencies from the cloud.r-project.org repository.
+}
+\examples{
+# Load a single package
+mu.library("dplyr")
+
+# Load multiple packages
+mu.library(c("ggplot2", "tidyr", "readr"))
+
 }

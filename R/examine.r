@@ -1,5 +1,45 @@
-#'@export
-# EXAMINE
+#' Perform Descriptive Statistical Analysis
+#'
+#' @description
+#' Calculates and displays comprehensive descriptive statistics for numeric variables
+#' in a dataset. Statistics include measures of central tendency, dispersion, and distribution shape.
+#'
+#' @param data A data frame or vector containing the variables to analyze
+#' @param x Optional. Specific variable(s) to analyze. If NULL, analyzes all numeric variables
+#' @param all.results Logical. If TRUE, displays extended set of statistics. Default is FALSE
+#' @param ... Additional arguments (currently unused)
+#'
+#' @return Prints a formatted summary for each analyzed variable containing:
+#'   \itemize{
+#'     \item Basic information: total observations, valid cases, missing cases
+#'     \item Basic statistics: mean, trimmed mean, median, standard deviation
+#'     \item Distribution measures: skewness, kurtosis (with significance indicators)
+#'     \item When all.results=TRUE, additional statistics include:
+#'       \itemize{
+#'         \item 95% confidence intervals
+#'         \item Variance
+#'         \item Range
+#'         \item IQR (Interquartile Range)
+#'       }
+#'   }
+#'
+#' @details
+#' The function automatically handles missing values and provides standard errors
+#' for skewness and kurtosis. Significance of non-normal distribution is indicated
+#' with asterisks (*) when the absolute value of skewness or kurtosis divided by
+#' their respective standard errors exceeds 2.
+#'
+#' @examples
+#' # Examine all numeric variables in a dataset
+#' examine(mtcars)
+#'
+#' # Examine specific variables
+#' examine(mtcars, x = mtcars$mpg)
+#'
+#' # Get extended statistics
+#' examine(mtcars, all.results = TRUE)
+#'
+#' @export
 examine <- function(data, x=NULL, all.results=FALSE, ...)
 {
   # if data is a vector, convert to data.frame
@@ -7,10 +47,10 @@ examine <- function(data, x=NULL, all.results=FALSE, ...)
   {
     data <- data.frame(data)
   }
-  
+
   # check which arguments have been declared
   arguments <- as.list(match.call())
-  
+
   if("x" %in% names(arguments))
   {
     data.num = data.frame(eval(arguments$x, data))
@@ -27,20 +67,20 @@ examine <- function(data, x=NULL, all.results=FALSE, ...)
       data.num <- data
     }
   }
-  
+
   for(col in 1:length(data.num))
   {
     x <- data.num[names(data.num)[col]]
-    
+
     Name <- names(x)
     Ntot <- nrow(x)
     Nval <- sum(!is.na(x))
     Nmiss <- Ntot - Nval
     PCNTval <- Nval/Ntot*100
     PCNTmiss <- Nmiss/Ntot*100
-    
+
     x <- as.numeric(t(x))
-    
+
     temp <- data.frame(
       "Mean" = round(mean(x, na.rm=T), 2),
       "Variance" = round(var(x, na.rm=T), 3),
@@ -54,16 +94,16 @@ examine <- function(data, x=NULL, all.results=FALSE, ...)
       "Kurtosis" = round(DescTools::Kurt(x, na.rm=T, method=2), 3),
       "Median" = round(median(x, na.rm=T), 3)
     )
-    
+
     temp <- within(temp, {
       "95CIup" <- round(Mean+1.96*Std.Error, 2)
       "95CIlow" <- round(Mean-1.96*Std.Error, 2)
       Range <- Maximum-Minimum
     })
-    
+
     SES <- round(sqrt( (6*Nval*(Nval-1)) / ((Nval-2)*(Nval+1)*(Nval+3)) ), 3)
     SEK <- round(2*SES*sqrt( (Nval^2 - 1) / ((Nval-3)*(Nval+5)) ), 3)
-    
+
     if(all.results)
     {
       output <- as.data.frame(t(temp[c(1,13,14,7,11,2,3,5,6,12,8,9,10)]))

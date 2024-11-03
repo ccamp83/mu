@@ -2,15 +2,54 @@
 % Please edit documentation in R/libraries.r
 \name{libraries}
 \alias{libraries}
-\title{Load and update all the required libraries of the shapelab package}
+\title{Install and Load Required Packages for ShapeLab}
 \usage{
 libraries(load = T, update = F)
 }
 \arguments{
-\item{load}{should the packages be loaded? (default to TRUE)}
+\item{load}{Logical. If TRUE (default), loads all required packages after installation}
 
-\item{update}{if TRUE, the function also updates the libraries to newest version (FALSE by default)}
+\item{update}{Logical. If TRUE, updates all installed packages to their newest versions (default: FALSE)}
+}
+\value{
+No return value, called for side effects
 }
 \description{
-Load and update all the required libraries of the shapelab package
+This function manages package dependencies for the ShapeLab package. It checks for required packages,
+installs missing ones, optionally updates existing packages, and loads them into the R environment.
+}
+\details{
+The function performs the following steps:
+1. Checks currently installed packages
+2. Compares against required package list
+3. Installs any missing packages from CRAN
+4. Optionally updates all packages
+5. Optionally loads all required packages
+
+Required packages include:
+* Data manipulation: plyr
+* Visualization: ggplot2, cowplot, grid, grDevices, lattice
+* Statistical analysis: lme4, car, AICcmodavg, fpc
+* Mixed models: pbkrtest
+* Utilities: Hmisc, fields, gridExtra, phia, gtools
+* Development: roxygen2
+* Matrix operations: clusterGeneration
+* Statistical tools: DescTools
+* Parallel processing: parallel
+* Visualization helpers: heplots
+}
+\note{
+Packages are installed from the CRAN mirror "https://cloud.r-project.org/"
+All dependencies are automatically installed with each package
+}
+\examples{
+# Load packages only
+libraries(load = TRUE, update = FALSE)
+
+# Update and load packages
+libraries(load = TRUE, update = TRUE)
+
+# Install/update packages without loading
+libraries(load = FALSE, update = TRUE)
+
 }

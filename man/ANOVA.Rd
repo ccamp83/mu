@@ -2,10 +2,51 @@
 % Please edit documentation in R/ANOVA.R
 \name{ANOVA}
 \alias{ANOVA}
-\title{Comprehensive ANOVA}
+\title{Perform Comprehensive Analysis of Variance (ANOVA)}
 \usage{
 ANOVA(data, dv, formula, type = 2)
 }
+\arguments{
+\item{data}{A data frame containing the variables for analysis}
+
+\item{dv}{Character string specifying the dependent variable}
+
+\item{formula}{A formula object specifying the ANOVA design. For repeated measures,
+the within-subjects factors should be on the right side of the ~}
+
+\item{type}{Numeric value specifying the type of sum of squares to use (default = 2)}
+}
+\value{
+A list object of class "ANOVA" containing:
+  \item{fit}{The fitted linear model object}
+  \item{idata}{Data frame containing the within-subjects factor levels}
+  \item{wdata}{The data in wide format}
+  \item{full.analysis}{Complete Anova results}
+  \item{results}{List containing univariate and multivariate results}
+  \item{sphericity.test}{Mauchly's test of sphericity (for repeated measures)}
+  \item{sphericity.correction}{Sphericity corrections (Greenhouse-Geisser and Huynh-Feldt)}
+}
 \description{
-Comprehensive ANOVA
+This function performs a comprehensive Analysis of Variance (ANOVA) that handles both univariate
+and multivariate designs. It provides detailed statistics including effect sizes and sphericity tests
+for repeated measures designs.
+}
+\details{
+The function calculates:
+* Partial eta-squared (etaSqP)
+* Eta-squared (etaSq)
+* Omega-squared (omegaSq)
+* F-values and p-values
+* Sphericity tests for repeated measures designs
+}
+\examples{
+# Between-subjects ANOVA
+ANOVA(data = mydata, dv = "score", formula = ~ group)
+
+# Repeated measures ANOVA
+ANOVA(data = mydata, dv = "score", formula = subject ~ time)
+
+# Mixed ANOVA
+ANOVA(data = mydata, dv = "score", formula = subject + group ~ time)
+
 }

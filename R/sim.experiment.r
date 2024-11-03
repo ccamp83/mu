@@ -4,60 +4,60 @@
 #' @param repetitions number of repetitions per subject
 #' @param random_seed logical. When FALSE (default) the data is simulated using the seed passed via the design object. Set to TRUE to generate a random seed (ignores the seed parameter passed by the design object)
 #' @param return_data default to TRUE. Use FALSE to produce just a trials sequence
-#' @examples 
+#' @examples
 #' libraries()
-#' 
+#'
 #' # set a seed
 #' trial.seed <- 9000
-#' 
+#'
 #' # initialize the factors list
 #' lIV <- list(
 #'   Var1 = factor(1:2, labels = c("a","b"))
 #'   ,
 #'   Var2 = factor(1:2)
 #' )
-#' 
+#'
 #' tIV <- c("w","b")
-#' 
+#'
 #' # describe the model
 #' exp.formula <- ~ Var1*Var2
-#' 
+#'
 #' # initialize the coefficients
 #' cus.beta <- c(3, 6, 9, 12) # means of the fixed effects
 #' cus.theta <- c(1, 2, 3, 4)  # standard errors of the random components
 #' cus.sigma <- 3 # sigma of the model
-#' 
+#'
 #' # few examples
 #' (r <- design.experiment(lIV, tIV, betas = cus.beta, thetas = cus.theta, s = cus.sigma, exp.formula, seed=trial.seed))
-#' 
+#'
 #' # start the simulation
-#' exp.info <- sim.experiment(design = r, 
-#'                            subj = 10, 
+#' exp.info <- sim.experiment(design = r,
+#'                            subj = 10,
 #'                            repetitions = 10)
-#' 
+#'
 #' # extract the simulated data
 #' exp <- exp.info$exp
-#' 
+#'
 #' # plot the results
-#' ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) + 
+#' ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) +
 #'   geom_point(size=3, alpha=.4) +                                                  # draw raw scores
 #'   stat_smooth(method=lm, level=.68, se=F, linewidth=1, formula = y ~ x) +         # draw fit line
 #'   stat_summary(fun.data = mean_se, geom='point', size=3, color='black') +         # draw mean points
 #'   stat_summary(fun.data = mean_se, geom='errorbar', width=.2, linewidth=1.2) +    # draw errorbars
 #'   theme_bw()
-#' 
+#'
 #' # check a fit of the data (with more subjects)
-#' exp.info <- sim.experiment(design = r, 
-#'                            subj = 100, 
+#' exp.info <- sim.experiment(design = r,
+#'                            subj = 100,
 #'                            repetitions = 10)
 #' exp <- exp.info$exp
 #' (lmod1 <- lme4::lmer(y ~ Var1*Var2 + (1 + Var1*Var2|subjName), data=exp,
 #'                      control = lmerControl(optimizer = "bobyqa")))
 #' @return An object of the class mu.exp.design with the following values
-#' 
+#'
 #' @return seed the seed that was used during the simulation
 #' @return exp the simulated data
-#' @return coef.matrix the subj-by-subj coefficient matrix 
+#' @return coef.matrix the subj-by-subj coefficient matrix
 #' @export sim.experiment
 sim.experiment <- function(design, subj, repetitions, random_seed = F, return_data = T)
 {
@@ -68,10 +68,10 @@ sim.experiment <- function(design, subj, repetitions, random_seed = F, return_da
   {
     stop('Design must be of class mu.exp.design')
   }
-  
+
   sim.seed <- ifelse(random_seed, round(runif(1, 0, 10000)), design$seed)
   set.seed(sim.seed)
-  
+
   lexp <- design$IV
   lexp[["IV_type"]] = design$IV_type
   between_cols <- which(lexp[["IV_type"]] == "b")
@@ -81,7 +81,7 @@ sim.experiment <- function(design, subj, repetitions, random_seed = F, return_da
   ## we create a subset with only the within variables
   within_cols <- which(lexp[["IV_type"]] == "w")
   within_data <- expand.grid(lexp[c(within_cols, length(lexp)-1, length(lexp))])
-  
+
   # preparing the dataset
   exp <- NULL
   # is there a between component to add to the dataset?
@@ -96,31 +96,31 @@ sim.experiment <- function(design, subj, repetitions, random_seed = F, return_da
     names(exp)[(length(within_data)+1):length(exp)] <- names(between_data)
   } else
     exp <- within_data
-  
+
   exp$subjName <- paste('subj', exp$subjName, sep='')
   exp$trialN <- 1:(nrow(within_data)/subj)
   # reorder the columns
   exp <- exp[c("subjName","trialN","repetition",names(design$IV))]
-  
+
   # dataset matrix
   exp.matrix <- as.data.frame(model.matrix(design$formula, data=exp))
-  
+
   # prepare the output
   beta <- NULL
   coef.matrix <- NULL
-  
+
   if(return_data)
   {
     #### sampling
-    
+
     beta.matrix <- design$beta.matrix
     beta.fix <- as.numeric(design$beta.matrix)
     sigma <- design$sigma
     ncoef <- length(beta.matrix)
-    
+
     M <- as.matrix(design$theta.matrix)
     L = t(chol(M)) # transposed so it gives the lower triangle
-    
+
     # First we need to extract the coefficients for each individual, given the covariance matrix
     # Random variables that follow an M correlation matrix
     r = L %*% matrix(rnorm(lengthunique(exp$subjName)*ncoef), nrow=ncoef, ncol=lengthunique(exp$subjName))
@@ -129,20 +129,20 @@ sim.experiment <- function(design, subj, repetitions, random_seed = F, return_da
     fixefM <- t(matrix(rep(beta.fix, lengthunique(exp$subjName)), nrow=ncoef, ncol=lengthunique(exp$subjName)))
     beta <- r + fixefM
     beta <- as.data.frame(beta); row.names(beta) <- unique(exp$subjName)
-    
+
     coef.matrix <- beta[rep(seq_len(nrow(beta)), each=max(exp$trialN)),]; row.names(coef.matrix) <- 1:nrow(coef.matrix)
     exp.coef <- as.data.frame(as.matrix(exp.matrix) * coef.matrix)
-    
+
     #### experiment responses
     exp$y <- apply(exp.coef, 1, sum) + rnorm(nrow(exp), 0, sigma)
   }
-  
+
   # package the output
   output <- list("seed" = sim.seed,
                  "exp" = exp,
                  "coef.matrix" = beta)
   class(output) <- "mu.exp.design"
-  
+
   cat("Done.\n\n")
   return(output)
 }

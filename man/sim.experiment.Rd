@@ -56,15 +56,15 @@ cus.sigma <- 3 # sigma of the model
 (r <- design.experiment(lIV, tIV, betas = cus.beta, thetas = cus.theta, s = cus.sigma, exp.formula, seed=trial.seed))
 
 # start the simulation
-exp.info <- sim.experiment(design = r, 
-                           subj = 10, 
+exp.info <- sim.experiment(design = r,
+                           subj = 10,
                            repetitions = 10)
 
 # extract the simulated data
 exp <- exp.info$exp
 
 # plot the results
-ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) + 
+ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) +
   geom_point(size=3, alpha=.4) +                                                  # draw raw scores
   stat_smooth(method=lm, level=.68, se=F, linewidth=1, formula = y ~ x) +         # draw fit line
   stat_summary(fun.data = mean_se, geom='point', size=3, color='black') +         # draw mean points
@@ -72,8 +72,8 @@ ggplot(aes(Var1, y, color=Var2, group=Var2), data=exp) + facet_wrap(~subjName) +
   theme_bw()
 
 # check a fit of the data (with more subjects)
-exp.info <- sim.experiment(design = r, 
-                           subj = 100, 
+exp.info <- sim.experiment(design = r,
+                           subj = 100,
                            repetitions = 10)
 exp <- exp.info$exp
 (lmod1 <- lme4::lmer(y ~ Var1*Var2 + (1 + Var1*Var2|subjName), data=exp,

@@ -1,3 +1,73 @@
+#' Simulate Psychophysical Staircase Procedure
+#' 
+#' @description
+#' Simulates one or multiple interleaved psychophysical staircases based on specified parameters.
+#' The simulation assumes an observer with a given sensitivity (mu) and precision (sd).
+#' 
+#' @param sc.specs A list of data frames, each containing specifications for a staircase:
+#'   \itemize{
+#'     \item startValue: Initial stimulus value
+#'     \item direction: Direction of the staircase (-1 for descending, 1 for ascending)
+#'     \item up.param: Parameters for upward steps (list with "delta" and "steps")
+#'     \item down.param: Parameters for downward steps (list with "delta" and "steps")
+#'   }
+#' @param mu Mean of the observer's psychometric function (sensitivity)
+#' @param sd Standard deviation of the observer's psychometric function (precision)
+#' @param maxTrials Maximum number of trials to run
+#' @param maxReversals Maximum number of reversals before terminating a staircase
+#' @param maxSteps Maximum number of steps allowed in each direction
+#' @param delta.gradient Type of gradient for step size adjustment:
+#'   \itemize{
+#'     \item "fixed": Constant step size
+#'     \item "exp": Exponentially decreasing step size
+#'     \item "half": Step size halves after half of reversals
+#'   }
+#' @param seed Random seed for reproducibility (optional)
+#'
+#' @return A data frame containing trial-by-trial staircase data with columns:
+#'   \itemize{
+#'     \item trialN: Trial number
+#'     \item staircaseID: Identifier for the staircase
+#'     \item stepN: Step number within the staircase
+#'     \item stepRep: Number of repetitions at current step
+#'     \item reversalN: Number of reversals occurred
+#'     \item delta: Step size used
+#'     \item value: Stimulus value
+#'     \item resp: Observer's response (0 or 1)
+#'   }
+#'
+#' @details
+#' The function implements an adaptive staircase procedure commonly used in psychophysics.
+#' It can handle multiple interleaved staircases, each with its own parameters.
+#' The observer's responses are simulated using a cumulative normal distribution
+#' with the specified mu and sd parameters.
+#'
+#' The staircase procedure continues until either:
+#' \itemize{
+#'   \item The maximum number of trials is reached
+#'   \item The maximum number of reversals is reached for all staircases
+#'   \item The maximum number of steps is reached for all staircases
+#' }
+#'
+#' @examples
+#' # Single descending staircase
+#' sc.spec <- list(data.frame(
+#'   startValue = 10,
+#'   direction = -1,
+#'   up.param = I(list(delta = 2, steps = 1)),
+#'   down.param = I(list(delta = -2, steps = 3))
+#' ))
+#' 
+#' result <- sim.staircase(
+#'   sc.specs = sc.spec,
+#'   mu = 5,
+#'   sd = 1,
+#'   maxTrials = 100,
+#'   maxReversals = 10,
+#'   maxSteps = 50,
+#'   delta.gradient = "fixed"
+#' )
+#'
 #' @export
 sim.staircase <- function(sc.specs,
                           mu,
