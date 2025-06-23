@@ -20,14 +20,16 @@ sim.questionnaire.multi(
 - n_items: number of items
 - likert: vector of possible Likert scale values
 - total_mean: mean of total score distribution
-- total_sd: standard deviation of total score distribution
+- total_sd: standard deviation of desired total score distribution
 - total_min: minimum possible total score (optional, will be calculated if not provided)
 - total_max: maximum possible total score (optional, will be calculated if not provided)}
 
 \item{linear_model}{Optional linear model specification. A list with:
 - formula: R formula string (e.g., "S2 ~ S1", "S3 ~ S1 + S2 + S1:S2")
-- coefficients: named vector of coefficients (intercept, slopes, interactions)
-- residual_sd: standard deviation of residuals}
+- coefficients: (Optional) named vector of coefficients (intercept, slopes, interactions). If not provided,
+                will be estimated based on `desired_coefficient_signs` and scale characteristics.
+- residual_sd: (Optional) standard deviation of residuals. If not provided, will be estimated.
+- desired_coefficient_signs: (Optional) A named list of 1 or -1, specifying desired signs.}
 
 \item{correlations}{Optional correlation matrix between questionnaire total scores}
 
@@ -42,33 +44,50 @@ Data frame with item-level responses and total scores for all questionnaires
 Simulate multiple questionnaires with custom linear model relationships
 }
 \examples{
-# Two questionnaires with linear relationship
+# Example 1: Two questionnaires with linear relationship (manual coefficients)
 set.seed(123)
-simdat <- sim.questionnaire.multi(
+simdat_manual <- sim.questionnaire.multi(
+   N = 100,
+   questionnaires = list(
+     S1 = list(n_items = 10, likert = 1:5, total_mean = 35, total_sd = 5),
+     S2 = list(n_items = 8, likert = 0:4, total_mean = 20, total_sd = 4)
+   ),
+   linear_model = list(
+     formula = "S2 ~ S1",
+     coefficients = c(intercept = 5, S1 = 0.3),
+     residual_sd = 2
+   )
+)
+summary(lm(S2_total ~ S1_total, data = simdat_manual))
+
+# Example 2: Three questionnaires with interactions (auto-estimated coefficients with signs)
+set.seed(456)
+simdat_auto <- sim.questionnaire.multi(
+   N = 200,
+   questionnaires = list(
+     Anxiety = list(n_items = 10, likert = 1:5, total_mean = 30, total_sd = 6),
+     Depression = list(n_items = 12, likert = 1:5, total_mean = 28, total_sd = 7),
+     Stress = list(n_items = 8, likert = 1:7, total_mean = 15, total_sd = 4)
+   ),
+   linear_model = list(
+     formula = "Stress ~ Anxiety + Depression + Anxiety*Depression",
+     desired_coefficient_signs = list(Anxiety = 1, Depression = -1, "Anxiety:Depression" = -1)
+   )
+)
+summary(lm(Stress_total ~ Anxiety_total + Depression_total + Anxiety_total:Depression_total, data = simdat_auto))
+
+# Example 3: Simulating with correlations instead of a linear model
+set.seed(789)
+simdat_corr <- sim.questionnaire.multi(
   N = 100,
   questionnaires = list(
-    S1 = list(n_items = 10, likert = 1:5, total_mean = 35, total_sd = 5),
-    S2 = list(n_items = 8, likert = 0:4, total_mean = 20, total_sd = 4)
+    Q1 = list(n_items = 5, likert = 1:5, total_mean = 15, total_sd = 3),
+    Q2 = list(n_items = 7, likert = 1:4, total_mean = 20, total_sd = 4)
   ),
-  linear_model = list(
-    formula = "S2 ~ S1",
-    coefficients = c(intercept = 5, S1 = 0.3),
-    residual_sd = 2
-  )
+  correlations = matrix(c(
+    1.0, 0.6,
+    0.6, 1.0
+  ), nrow = 2, byrow = TRUE)
 )
-
-# Three questionnaires with interactions
-simdat <- sim.questionnaire.multi(
-  N = 200,
-  questionnaires = list(
-    Anxiety = list(n_items = 10, likert = 1:5, total_mean = 30, total_sd = 6),
-    Depression = list(n_items = 12, likert = 1:5, total_mean = 28, total_sd = 7),
-    Stress = list(n_items = 8, likert = 0:4, total_mean = 15, total_sd = 4)
-  ),
-  linear_model = list(
-    formula = "Stress ~ Anxiety + Depression + Anxiety*Depression",
-    coefficients = c(intercept = 2, Anxiety = 0.2, Depression = 0.3, "Anxiety:Depression" = 0.01),
-    residual_sd = 1.5
-  )
-)
+cor(simdat_corr$Q1_total, simdat_corr$Q2_total)
 }
