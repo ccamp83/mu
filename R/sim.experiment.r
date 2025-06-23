@@ -2,6 +2,7 @@
 #' @param design an object of the class mu.exp.design produced with the function design.experiment
 #' @param subj number of subjects
 #' @param repetitions number of repetitions per subject
+#' @param family response type. Default is "gaussian". Use "binomial" for binary responses
 #' @param random_seed logical. When FALSE (default) the data is simulated using the seed passed via the design object. Set to TRUE to generate a random seed (ignores the seed parameter passed by the design object)
 #' @param return_data default to TRUE. Use FALSE to produce just a trials sequence
 #' @examples
@@ -59,7 +60,7 @@
 #' @return exp the simulated data
 #' @return coef.matrix the subj-by-subj coefficient matrix
 #' @export sim.experiment
-sim.experiment <- function(design, subj, repetitions, random_seed = F, return_data = T)
+sim.experiment <- function(design, subj, repetitions, family = "gaussian", random_seed = F, return_data = T)
 {
   # Input validation
   if (!inherits(design, "mu.exp.design")) {
@@ -149,7 +150,15 @@ sim.experiment <- function(design, subj, repetitions, random_seed = F, return_da
     exp.coef <- as.data.frame(as.matrix(exp.matrix) * coef.matrix)
 
     #### experiment responses
-    exp$y <- apply(exp.coef, 1, sum) + rnorm(nrow(exp), 0, sigma)
+    if (family == "gaussian") {
+      exp$y <- apply(exp.coef, 1, sum) + rnorm(nrow(exp), 0, sigma)
+    } else if (family == "binomial") {
+      eta <- apply(exp.coef, 1, sum)
+      p <- 1 / (1 + exp(-eta))
+      exp$y <- rbinom(n = nrow(exp), size = 1, prob = p)
+    } else {
+      stop("family must be either 'gaussian' or 'binomial'")
+    }
   }
 
   # package the output
