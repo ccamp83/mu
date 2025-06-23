@@ -8,9 +8,12 @@ sim.questionnaire.multi(
   N = 100,
   questionnaires,
   linear_model = NULL,
+  linear_models = NULL,
   correlations = NULL,
   seed = NULL,
-  debug = FALSE
+  debug = FALSE,
+  max_retries = 20,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -24,18 +27,19 @@ sim.questionnaire.multi(
 - total_min: minimum possible total score (optional, will be calculated if not provided)
 - total_max: maximum possible total score (optional, will be calculated if not provided)}
 
-\item{linear_model}{Optional linear model specification. A list with:
-- formula: R formula string (e.g., "S2 ~ S1", "S3 ~ S1 + S2 + S1:S2")
-- coefficients: (Optional) named vector of coefficients (intercept, slopes, interactions). If not provided,
-                will be estimated based on `desired_coefficient_signs` and scale characteristics.
-- residual_sd: (Optional) standard deviation of residuals. If not provided, will be estimated.
-- desired_coefficient_signs: (Optional) A named list of 1 or -1, specifying desired signs.}
+\item{linear_model}{(For backward compatibility or single models) A list specifying a single linear model.}
+
+\item{linear_models}{(Recommended) A list of lists, where each inner list specifies a linear model to be applied sequentially. Use this for mediation or other path models.}
 
 \item{correlations}{Optional correlation matrix between questionnaire total scores}
 
 \item{seed}{Random seed for reproducibility}
 
 \item{debug}{If TRUE, returns additional diagnostic information about the linear model}
+
+\item{max_retries}{The maximum number of attempts to generate a dataset that matches the desired coefficient signs.}
+
+\item{verbose}{If TRUE, prints messages about retry attempts for matching coefficient signs.}
 }
 \value{
 Data frame with item-level responses and total scores for all questionnaires
@@ -44,25 +48,9 @@ Data frame with item-level responses and total scores for all questionnaires
 Simulate multiple questionnaires with custom linear model relationships
 }
 \examples{
-# Example 1: Two questionnaires with linear relationship (manual coefficients)
-set.seed(123)
-simdat_manual <- sim.questionnaire.multi(
-   N = 100,
-   questionnaires = list(
-     S1 = list(n_items = 10, likert = 1:5, total_mean = 35, total_sd = 5),
-     S2 = list(n_items = 8, likert = 0:4, total_mean = 20, total_sd = 4)
-   ),
-   linear_model = list(
-     formula = "S2 ~ S1",
-     coefficients = c(intercept = 5, S1 = 0.3),
-     residual_sd = 2
-   )
-)
-summary(lm(S2_total ~ S1_total, data = simdat_manual))
-
-# Example 2: Three questionnaires with interactions (auto-estimated coefficients with signs)
+# Example 1: Single moderation model (backward compatible)
 set.seed(456)
-simdat_auto <- sim.questionnaire.multi(
+simdat_single_mod <- sim.questionnaire.multi(
    N = 200,
    questionnaires = list(
      Anxiety = list(n_items = 10, likert = 1:5, total_mean = 30, total_sd = 6),
@@ -74,20 +62,23 @@ simdat_auto <- sim.questionnaire.multi(
      desired_coefficient_signs = list(Anxiety = 1, Depression = -1, "Anxiety:Depression" = -1)
    )
 )
-summary(lm(Stress_total ~ Anxiety_total + Depression_total + Anxiety_total:Depression_total, data = simdat_auto))
+summary(lm(Stress_total ~ Anxiety_total * Depression_total, data = simdat_single_mod))
 
-# Example 3: Simulating with correlations instead of a linear model
-set.seed(789)
-simdat_corr <- sim.questionnaire.multi(
-  N = 100,
+# Example 2: Mediation model (IV -> M -> DV)
+set.seed(111)
+simdat_mediation <- sim.questionnaire.multi(
+  N = 150,
   questionnaires = list(
-    Q1 = list(n_items = 5, likert = 1:5, total_mean = 15, total_sd = 3),
-    Q2 = list(n_items = 7, likert = 1:4, total_mean = 20, total_sd = 4)
+    Workload = list(n_items = 10, likert = 1:5, total_mean = 30, total_sd = 5),
+    Burnout = list(n_items = 8, likert = 1:7, total_mean = 35, total_sd = 6),
+    Satisfaction = list(n_items = 6, likert = 0:10, total_mean = 40, total_sd = 8)
   ),
-  correlations = matrix(c(
-    1.0, 0.6,
-    0.6, 1.0
-  ), nrow = 2, byrow = TRUE)
+  linear_models = list(
+    list(formula = "Burnout ~ Workload", desired_coefficient_signs = list(Workload = 1)),
+    list(formula = "Satisfaction ~ Burnout + Workload", desired_coefficient_signs = list(Burnout = -1, Workload = -1))
+  ),
+  max_retries = 10
 )
-cor(simdat_corr$Q1_total, simdat_corr$Q2_total)
+summary(lm(Burnout_total ~ Workload_total, data = simdat_mediation))
+summary(lm(Satisfaction_total ~ Burnout_total + Workload_total, data = simdat_mediation))
 }
