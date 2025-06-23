@@ -8,9 +8,9 @@
 {
   descriptionfile <- system.file("DESCRIPTION", package = "mu")
   descfile <- desc::desc(descriptionfile)
-  
+  muVersion <- as.character(packageVersion(pkgname))
   packageStartupMessage(paste0("#### MU v",
-                               installed.packages()['mu','Version'],
+                               muVersion,
                                " | ",
                                descfile$get_field("Date"),
                                " ####"))

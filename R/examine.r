@@ -109,19 +109,21 @@ examine <- function(data, x=NULL, all.results=FALSE, ...)
       output <- as.data.frame(t(temp[c(1,13,14,7,11,2,3,5,6,12,8,9,10)]))
       names(output) <- "Statistic"
       output$"Std.Error" <- c(temp[4], rep('', 10), SES, SEK)
-      output$'' <- c(rep(NA, 11), ifelse(abs(temp[9]/SES) > 2, ' *', ''), ifelse(abs(temp[10]/SEK) > 2, ' *', ''))
+      output$Significance <- c(rep(NA, 11), ifelse(abs(temp[9]/SES) > 2, ' *', ''), ifelse(abs(temp[10]/SEK) > 2, ' *', ''))
     } else
     {
       output <- as.data.frame(t(temp[c(1,7,11,3,9,10)]))
       names(output) <- "Statistic"
       output$"Std.Error" <- c(temp[4], rep('', 3), SES, SEK)
-      output$'' <- c(rep("", 4), ifelse(abs(temp[9]/SES) > 2, ' *', ''), ifelse(abs(temp[10]/SEK) > 2, ' *', ''))
+      output$Significance <- c(rep("", 4), ifelse(abs(temp[9]/SES) > 2, ' *', ''), ifelse(abs(temp[10]/SEK) > 2, ' *', ''))
     }
     cat('\n------------------------------------\n')
     cat('\nName: ', Name, "\n", sep='')
     cat("\nValid Obs:\t\t", Nval, " (",round(Nval/Ntot*100, 1),"%) \n", sep='')
     cat("Missing Obs:\t", Nmiss, " (",round(Nmiss/Ntot*100, 1),"%) \n", sep='')
     cat("Total Obs:\t\t", Ntot, "\n\n", sep='')
+
+    names(output)[names(output) == "Significance"] <- ""
     print(output, na.print='', quote=F)
   }
 }
