@@ -56,6 +56,18 @@
 #' @export
 design.experiment <- function(list.IV, type.IV, formula, calculate.coef.num = F, seed=NA, beta.min=0, beta.max=20, betas=NA, theta.min=0, theta.max=8, thetas=NA, thetas.orthogonal=T, s.min=0, s.max=20, s=NA)
 {
+  # Input validation
+  formula_vars <- all.vars(formula)
+  if (length(formula_vars) == 0) {
+    stop("Formula must contain at least one variable.")
+  }
+  if (is.null(names(list.IV)) || any(nchar(names(list.IV)) == 0) || any(is.na(names(list.IV)))) {
+    stop("All elements of list.IV must be named and non-empty.")
+  }
+  if (!all(formula_vars %in% names(list.IV))) {
+    stop("All variables in the formula must be present in list.IV.")
+  }
+
   # independent variables
   IV <- list.IV
   tIV <- type.IV

@@ -56,6 +56,18 @@
 #' @export
 sim.coef.experiment <- function(list.IV, formula, coefs = NA, results = NA)
 {
+  # Input validation
+  formula_vars <- all.vars(formula)
+  if (length(formula_vars) == 0) {
+    stop("Formula must contain at least one variable.")
+  }
+  if (is.null(names(list.IV)) || any(nchar(names(list.IV)) == 0) || any(is.na(names(list.IV)))) {
+    stop("All elements of list.IV must be named and non-empty.")
+  }
+  if (!all(formula_vars %in% names(list.IV))) {
+    stop("All variables in the formula must be present in list.IV.")
+  }
+
   data <- expand.grid(list.IV[all.vars(formula)])
 
   modm <- model.matrix(formula, data)

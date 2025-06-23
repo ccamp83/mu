@@ -61,6 +61,21 @@
 #' @export sim.experiment
 sim.experiment <- function(design, subj, repetitions, random_seed = F, return_data = T)
 {
+  # Input validation
+  if (!inherits(design, "mu.exp.design")) {
+    stop('Design must be of class mu.exp.design')
+  }
+  formula_vars <- all.vars(design$formula)
+  if (length(formula_vars) == 0) {
+    stop("Design formula must contain at least one variable.")
+  }
+  if (is.null(names(design$IV)) || any(nchar(names(design$IV)) == 0) || any(is.na(names(design$IV)))) {
+    stop("All elements of design$IV must be named and non-empty.")
+  }
+  if (!all(formula_vars %in% names(design$IV))) {
+    stop("All variables in the design formula must be present in design$IV.")
+  }
+
   if(class(design) == "mu.exp.design")
   {
     cat("Simulating... ")
